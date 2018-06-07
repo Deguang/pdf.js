@@ -633,12 +633,12 @@ html[dir='rtl'] .splitToolbarButtonSeparator {
 html[dir='ltr'] .toolbarButton,
 html[dir='ltr'] .overlayButton,
 html[dir='ltr'] .dropdownToolbarButton {
-  margin: 3px 2px 4px 0;
+  margin: 4px 2px 4px 0;
 }
 html[dir='rtl'] .toolbarButton,
 html[dir='rtl'] .overlayButton,
 html[dir='rtl'] .dropdownToolbarButton {
-  margin: 3px 0 4px 2px;
+  margin: 4px 0 4px 2px;
 }
 
 .toolbarButton:hover,
@@ -711,6 +711,7 @@ html[dir='rtl'] .dropdownToolbarButton {
 }
 
 .dropdownToolbarButton > select {
+  height: 20px;
   min-width: 140px;
   font-size: 12px;
   color: hsl(0,0%,95%);
@@ -1019,7 +1020,7 @@ html[dir='rtl'] .verticalToolbarSeparator {
 }
 
 .toolbarField {
-  padding: 3px 6px;
+  padding: 4px 6px;
   margin: 4px 0 4px 0;
   border: 1px solid transparent;
   border-radius: 2px;

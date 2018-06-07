@@ -640,7 +640,8 @@ let PDFViewerApplication = {
       // Embedded PDF viewers should not be changing their parent page's title.
       return;
     }
-    document.title = title;
+    // document.title = title;
+    document.title = '文件预览';
   },
 
   /**
@@ -793,33 +794,44 @@ let PDFViewerApplication = {
   },
 
   download() {
-    function downloadByUrl() {
-      downloadManager.downloadUrl(url, filename);
+    let a = document.createElement('a');
+    if (!a.click) {
+      throw new Error('DownloadManager: "a.click()" is not supported.');
     }
+    a.href = this.url;
+    a.target = '_parent';
+    // <a> must be in the document for IE and recent Firefox versions,
+    // otherwise .click() is ignored.
+    (document.body || document.documentElement).appendChild(a);
+    a.click();
+    a.remove();
+    // function downloadByUrl() {
+    //   downloadManager.downloadUrl(url, filename);
+    // }
 
-    let url = this.baseUrl;
+    // let url = this.baseUrl;
     // Use this.url instead of this.baseUrl to perform filename detection based
     // on the reference fragment as ultimate fallback if needed.
-    let filename = this.contentDispositionFilename ||
-      getPDFFileNameFromURL(this.url);
-    let downloadManager = this.downloadManager;
-    downloadManager.onerror = (err) => {
-      // This error won't really be helpful because it's likely the
-      // fallback won't work either (or is already open).
-      this.error(`PDF failed to download: ${err}`);
-    };
+    // let filename = this.contentDispositionFilename ||
+    //   getPDFFileNameFromURL(this.url);
+    // let downloadManager = this.downloadManager;
+    // downloadManager.onerror = (err) => {
+    //   // This error won't really be helpful because it's likely the
+    //   // fallback won't work either (or is already open).
+    //   this.error(`PDF failed to download: ${err}`);
+    // };
 
     // When the PDF document isn't ready, or the PDF file is still downloading,
     // simply download using the URL.
-    if (!this.pdfDocument || !this.downloadComplete) {
-      downloadByUrl();
-      return;
-    }
+    // if (!this.pdfDocument || !this.downloadComplete) {
+      // downloadByUrl();
+      // return;
+    // }
 
-    this.pdfDocument.getData().then(function(data) {
-      let blob = createBlob(data, 'application/pdf');
-      downloadManager.download(blob, url, filename);
-    }).catch(downloadByUrl); // Error occurred, try downloading with the URL.
+    // this.pdfDocument.getData().then(function(data) {
+    //   // let blob = createBlob(data, 'application/pdf');
+    //   // downloadManager.download(blob, url, filename);
+    // }).catch(downloadByUrl); // Error occurred, try downloading with the URL.
   },
 
   fallback(featureId) {
@@ -888,6 +900,7 @@ let PDFViewerApplication = {
       let closeButton = errorWrapperConfig.closeButton;
       closeButton.onclick = function() {
         errorWrapper.setAttribute('hidden', 'true');
+        window.history.back();
       };
 
       let errorMoreInfo = errorWrapperConfig.errorMoreInfo;
@@ -1517,7 +1530,7 @@ let PDFViewerApplication = {
 let validateFileURL;
 if (typeof PDFJSDev === 'undefined' || PDFJSDev.test('GENERIC')) {
   const HOSTED_VIEWER_ORIGINS = ['null',
-    'http://mozilla.github.io', 'https://mozilla.github.io'];
+    'http://static.xinrenxinshi.com', 'https://static.xinrenxinshi.com'];
   validateFileURL = function validateFileURL(file) {
     if (file === undefined) {
       return;
@@ -1526,6 +1539,11 @@ if (typeof PDFJSDev === 'undefined' || PDFJSDev.test('GENERIC')) {
       let viewerOrigin = new URL(window.location.href).origin || 'null';
       if (HOSTED_VIEWER_ORIGINS.includes(viewerOrigin)) {
         // Hosted or local viewer, allow for any file locations
+        return;
+      }
+      if (viewerOrigin.indexOf('172.') > -1 ||
+        viewerOrigin.indexOf('localhost') > -1) {
+          // local allow
         return;
       }
       let { origin, protocol, } = new URL(file, window.location.href);
